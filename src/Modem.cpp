@@ -22,7 +22,7 @@
 bool ModemClass::_debug = false;
 ModemUrcHandler* ModemClass::_urcHandlers[MAX_URC_HANDLERS] = { NULL };
 
-ModemClass::ModemClass(Uart& uart, unsigned long baud, int resetPin, int dtrPin) :
+ModemClass::ModemClass(HardwareSerial& uart, unsigned long baud, int resetPin, int dtrPin) :
   _uart(&uart),
   _baud(baud),
   _resetPin(resetPin),
@@ -43,7 +43,7 @@ int ModemClass::begin(bool restart)
     pinMode(_resetPin, OUTPUT);
     digitalWrite(_resetPin, HIGH);
     delay(100);
-    digitalWrite(_resetPin, LOW);       
+    digitalWrite(_resetPin, LOW);
   } else {
     if (!autosense()) {
       return 0;
@@ -63,7 +63,7 @@ int ModemClass::begin(bool restart)
     if (waitForResponse() != 1) {
       return 0;
     }
-    
+
     _uart->end();
     delay(100);
     _uart->begin(_baud);
@@ -164,7 +164,12 @@ size_t ModemClass::write(uint8_t c)
   return _uart->write(c);
 }
 
-void ModemClass::send(const char* command)
+size_t ModemClass::write(const uint8_t *buf, size_t size)
+{
+  return _uart->write(buf, size);
+}
+
+void ModemClass::send(const char *command)
 {
   if (_lowPowerMode) {
     digitalWrite(_dtrPin, LOW);
@@ -182,7 +187,7 @@ void ModemClass::sendf(const char *fmt, ...)
   char buf[BUFSIZ];
 
   va_list ap;
-  va_start((ap), (fmt));     
+  va_start((ap), (fmt));
   vsnprintf(buf, sizeof(buf) - 1, fmt, ap);
   va_end(ap);
 
@@ -203,6 +208,19 @@ int ModemClass::waitForResponse(unsigned long timeout, String* responseDataStora
 
   _responseDataStorage = NULL;
   _buffer = "";
+  return -1;
+}
+
+int ModemClass::waitForPrompt(unsigned long timeout)
+{
+  for (unsigned long start = millis(); (millis() - start) < timeout;)
+  {
+    ready();
+    if (_buffer.endsWith(">"))
+    {
+      return 1;
+    }
+  }
   return -1;
 }
 
@@ -227,7 +245,7 @@ void ModemClass::poll()
     switch (_atCommandState) {
       case AT_COMMAND_IDLE:
       default: {
-        
+
         if (_buffer.startsWith("AT") && _buffer.endsWith("\r\n")) {
           _atCommandState = AT_RECEIVING_RESPONSE;
           _buffer = "";
@@ -240,7 +258,7 @@ void ModemClass::poll()
                 _urcHandlers[i]->handleUrc(_buffer);
               }
             }
-          }          
+          }
 
           _buffer = "";
         }
@@ -252,7 +270,7 @@ void ModemClass::poll()
         if (c == '\n') {
           int responseResultIndex = _buffer.lastIndexOf("OK\r\n");
           if (responseResultIndex != -1) {
-            _ready = 1;         
+            _ready = 1;
           } else {
             responseResultIndex = _buffer.lastIndexOf("ERROR\r\n");
             if (responseResultIndex != -1) {
@@ -315,4 +333,5 @@ void ModemClass::removeUrcHandler(ModemUrcHandler* handler)
   }
 }
 
-ModemClass MODEM(SerialGSM, 921600, GSM_RESETN, GSM_DTR);
+//ModemClass MODEM(SerialGSM, 921600, GSM_RESETN, GSM_DTR);
+ModemClass MODEM(Serial1, 921600, 0, 0); // TODO: take care of last two params!

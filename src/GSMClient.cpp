@@ -97,7 +97,7 @@ int GSMClient::ready()
     }
 
     case CLIENT_STATE_ENABLE_SSL: {
-      MODEM.sendf("AT+USOSEC=%d,1", _socket);
+      MODEM.sendf("AT+USOSEC=%d,1,0", _socket);
 
       _state = CLIENT_STATE_WAIT_ENABLE_SSL_RESPONSE;
       ready = 0;

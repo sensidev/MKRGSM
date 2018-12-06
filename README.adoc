@@ -1,8 +1,14 @@
-= MKRGSM Library for Arduino =
+= MKRGSM Library for Arduino - modified to support ESP32 =
 
-image:https://travis-ci.org/arduino-libraries/MKRGSM.svg?branch=master["Build Status", link="https://travis-ci.org/arduino-libraries/MKRGSM"]
+*Update*
+Based on version 1.2.1 of the original repo with some additions from version 1.3.1 to support custom SSL implementation.
+Version 1.3.1 (latest) is buggy regarding SSL support as https://github.com/256dpi/arduino-mqtt/issues/130[described]
 
-This library enables an Arduino MKR GSM 1400 board to do most of the operations you can do with a GSM phone: place and receive voice calls, send and receive SMS, and connect to the internet over a GPRS network. 
+This can be used with an ESP32 board running ESP-IDF (not Arduino), but you need to include arduino-esp32 as a component as described https://github.com/platformio/platform-espressif32/pull/142[here]
+
+//image:https://travis-ci.org/arduino-libraries/MKRGSM.svg?branch=master["Build Status", link="https://travis-ci.org/arduino-libraries/MKRGSM"]
+
+This library enables an ESP32 [.line-through]#Arduino MKR GSM 1400# board to do most of the operations you can do with a GSM phone: place and receive voice calls, send and receive SMS, and connect to the internet over a GPRS network.
 
 For more information about this library please visit us at
 http://www.arduino.cc/en/Reference/MKRGSM
