@@ -32,7 +32,7 @@ public:
 
 class ModemClass {
 public:
-  ModemClass(HardwareSerial &uart, unsigned long baud, int resetPin, int dtrPin);
+  ModemClass(Uart &uart, unsigned long baud, int resetPin, int dtrPin);
 
   int begin(bool restart = true);
   void end();
@@ -65,7 +65,7 @@ public:
   void removeUrcHandler(ModemUrcHandler* handler);
 
 private:
-  HardwareSerial* _uart;
+  Uart* _uart;
   unsigned long _baud;
   int _resetPin;
   int _dtrPin;

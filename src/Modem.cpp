@@ -22,7 +22,7 @@
 bool ModemClass::_debug = false;
 ModemUrcHandler* ModemClass::_urcHandlers[MAX_URC_HANDLERS] = { NULL };
 
-ModemClass::ModemClass(HardwareSerial& uart, unsigned long baud, int resetPin, int dtrPin) :
+ModemClass::ModemClass(Uart& uart, unsigned long baud, int resetPin, int dtrPin) :
   _uart(&uart),
   _baud(baud),
   _resetPin(resetPin),
@@ -333,5 +333,4 @@ void ModemClass::removeUrcHandler(ModemUrcHandler* handler)
   }
 }
 
-//ModemClass MODEM(SerialGSM, 921600, GSM_RESETN, GSM_DTR);
-ModemClass MODEM(Serial1, 921600, 0, 0); // TODO: take care of last two params!
+ModemClass MODEM(SerialGSM, 921600, GSM_RESETN, GSM_DTR);
