@@ -40,10 +40,16 @@ int ModemClass::begin(bool restart)
   _uart->begin(_baud > 115200 ? 115200 : _baud);
 
   if (_resetPin > -1 && restart) {
-    pinMode(_resetPin, OUTPUT);
-    digitalWrite(_resetPin, HIGH);
-    delay(100);
+//    pinMode(_resetPin, OUTPUT);
+//    digitalWrite(_resetPin, HIGH);
+//    delay(100);
+//    digitalWrite(_resetPin, LOW);
+
+    // for our custom boards where reset pin works slightly different
+    pinMode(_resetPin, OUTPUT_OPEN_DRAIN);
     digitalWrite(_resetPin, LOW);
+    delay(500);
+    digitalWrite(_resetPin, HIGH);
   } else {
     if (!autosense()) {
       return 0;
@@ -237,7 +243,7 @@ void ModemClass::poll()
     char c = _uart->read();
 
     if (_debug) {
-      Serial.write(c);
+      Serial1.write(c);
     }
 
     _buffer += c;
@@ -334,4 +340,4 @@ void ModemClass::removeUrcHandler(ModemUrcHandler* handler)
 }
 
 //ModemClass MODEM(SerialGSM, 921600, GSM_RESETN, GSM_DTR);
-ModemClass MODEM(Serial1, 921600, 0, 0); // TODO: take care of last two params!
+ModemClass MODEM(Serial, 921600, GPIO_NUM_23, GPIO_NUM_4);
